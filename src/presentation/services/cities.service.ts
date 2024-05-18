@@ -3,14 +3,22 @@ import {
   CityEntity,
   CreateCityDto,
   CustomError,
+  PaginationDto,
   UpdateCityDto,
 } from "../../domain";
 
 export class CitiesService {
-  async getCities() {
+  async getCities(paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
+
     try {
-      const cities = await City.findAll();
-      return cities.map((c) => CityEntity.fromObject(c));
+      //   const cities = await City.findAll();
+      const { count, rows } = await City.findAndCountAll({
+        offset: (page - 1) * limit,
+        limit: limit,
+      });
+
+      return rows.map((c) => CityEntity.fromObject(c));
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
     }

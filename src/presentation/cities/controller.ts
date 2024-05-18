@@ -16,7 +16,7 @@ export class CitiesController {
 
   getCities = (req: Request, res: Response) => {
     this.citiesService
-      .getCities()
+      .getCities(req.body.pagination)
       .then((cities) => res.json(cities))
       .catch((error) => this.handleError(error, res));
   };
