@@ -1,5 +1,7 @@
 import express, { Router } from "express";
 import path from "path";
+import swaggerUi from "swagger-ui-express";
+import swaggerSetup from "../docs/swagger";
 
 interface Options {
   port: number;
@@ -26,6 +28,11 @@ export class Server {
     //* Middlewares
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
+    this.app.use(
+      "/documentation",
+      swaggerUi.serve,
+      swaggerUi.setup(swaggerSetup)
+    );
 
     //* Public Folder
     this.app.use(express.static(this.public_path));
