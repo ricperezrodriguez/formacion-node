@@ -18,7 +18,16 @@ export class CitiesService {
         limit: limit,
       });
 
-      return rows.map((c) => CityEntity.fromObject(c));
+      return {
+        page: page,
+        limit: limit,
+        total: count,
+        next: `/api/cities?page=${page + 1}&limit=${limit}`,
+        prev:
+          page - 1 > 0 ? `/api/cities?page=${page - 1}&limit=${limit}` : null,
+
+        cities: rows.map((c) => CityEntity.fromObject(c)),
+      };
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
     }
