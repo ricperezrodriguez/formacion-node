@@ -1,6 +1,8 @@
 import { Router } from "express";
+import { FileUploadmiddleware } from "../middlewares/file-upload.middleware";
 import { PaginationMiddleware } from "../middlewares/pagination.middleware";
 import { CitiesService } from "../services/cities.service";
+import { FileUploadService } from "../services/file-upload.service";
 import { CitiesController } from "./controller";
 
 export class CitiesRoutes {
@@ -8,10 +10,11 @@ export class CitiesRoutes {
     const router = Router();
 
     const citiesService = new CitiesService();
-    const controller = new CitiesController(citiesService);
+    const fileUploadService = new FileUploadService();
+    const controller = new CitiesController(citiesService, fileUploadService);
 
     /**
-     * Post track
+     * Get track
      * @openapi
      * /cities/:
      *    get:
@@ -113,7 +116,7 @@ export class CitiesRoutes {
     router.put("/:id", controller.uptateCity);
 
     /**
-     * Post track
+     * Delete track
      * @openapi
      * /cities/{cityId}:
      *    delete:
@@ -143,6 +146,53 @@ export class CitiesRoutes {
      *       - ffofofof: []
      */
     router.delete("/:id", controller.deleteCity);
+
+    /**
+     * Post track
+     * @openapi
+     * /cities/image:
+     *    post:
+     *      tags:
+     *        - cities
+     *      summary: "Añadir foto ciudades"
+     *      description: Endpoint para añadir nuevas ciudades
+     *      requestBody:
+     *          content:
+     *            application/json:
+     *              schema:
+     *                $ref: "#/components/schemas/city"
+     *      responses:
+     *        '200':
+     *          description: Retorna el objeto insertado en la coleccion.
+     *        '400':
+     *          description: Bad request.
+     *      security:
+     *       - ffofofof: []
+     */
+    router.post(
+      "/image/:idCity",
+      [FileUploadmiddleware.containFiles],
+      controller.uploadImageCity
+    );
+
+    /**
+     * Get track
+     * @openapi
+     * /cities/image:
+     *    get:
+     *      tags:
+     *        - cities
+     *      summary: "Obtener imagenes ciudades"
+     *      description: Endpoint para obtenertodas las ciudades
+     *      responses:
+     *        '200':
+     *          description: Retorna el objeto insertado en la coleccion.
+     *        '400':
+     *          description: Bad request.
+     *      security:
+     *       - ffofofof: []
+     */
+    router.get("/image/:idCity", controller.getImageCity);
 
     return router;
   }

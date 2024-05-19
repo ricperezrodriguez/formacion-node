@@ -1,4 +1,5 @@
 import express, { Router } from "express";
+import fileUpload from "express-fileupload";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 import swaggerSetup from "../docs/swagger";
@@ -32,6 +33,11 @@ export class Server {
       "/documentation",
       swaggerUi.serve,
       swaggerUi.setup(swaggerSetup)
+    );
+    this.app.use(
+      fileUpload({
+        limits: { fileSize: 50 * 1024 * 1024 },
+      })
     );
 
     //* Public Folder

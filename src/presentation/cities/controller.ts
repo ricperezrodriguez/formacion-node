@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
+import { UploadedFile } from "express-fileupload";
 import { CreateCityDto, CustomError, UpdateCityDto } from "../../domain";
 import { CitiesService } from "../services/cities.service";
+import { FileUploadService } from "../services/file-upload.service";
 
 export class CitiesController {
-  constructor(private readonly citiesService: CitiesService) {}
+  constructor(
+    private readonly citiesService: CitiesService,
+    private readonly fileUploadService: FileUploadService
+  ) {}
 
   private handleError(error: unknown, res: Response) {
     if (error instanceof CustomError) {
@@ -63,6 +68,25 @@ export class CitiesController {
     this.citiesService
       .deleteCityById(id)
       .then((city) => res.json(city))
+      .catch((error) => this.handleError(error, res));
+  };
+
+  uploadImageCity = (req: Request, res: Response) => {
+    const idCity = req.params.idCity;
+    const file = req.body.files.at(0) as UploadedFile;
+
+    this.fileUploadService
+      .uploadSingle(file, idCity)
+      .then((file) => res.json(file))
+      .catch((error) => this.handleError(error, res));
+  };
+
+  getImageCity = (req: Request, res: Response) => {
+    const idCity = req.params.idCity;
+
+    this.fileUploadService
+      .getFiles(idCity)
+      .then((file) => res.sendFile(file))
       .catch((error) => this.handleError(error, res));
   };
 }
